@@ -1,1 +1,3 @@
-TagawaKenji Tp3
+# Bank Cashing System Simulator
+
+Simulates simple banking transactions
