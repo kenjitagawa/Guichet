@@ -24,6 +24,7 @@ namespace AppGuichet
         { 
             // Clear ListView "lsvTransactions"
             lsvTransactions.Items.Clear();
+            
 
             for (int n = m_colTransactions.Count - 1; n >= 0; n--)
             { 
@@ -59,10 +60,11 @@ namespace AppGuichet
                     ListViewItem listViewItem = new ListViewItem(transaction.SorteTransaction.ToString()); // First column
                     listViewItem.SubItems.Add(transaction.NumClient);
                     listViewItem.SubItems.Add(transaction.Date.ToString("yyyy-MM-dd HH:mm:ss"));
-                    listViewItem.SubItems.Add((transaction.Montant != 0) ? transaction.Montant.ToString() : "---");
+                    listViewItem.SubItems.Add((transaction.Montant != 0) ? transaction.Montant.ToString("C2") : "--");
                     lsvTransactions.Items.Add(listViewItem);
                 }
             }
+            lblNbrTransactions.Text = lsvTransactions.Items.Count.ToString();
 
 
         }
@@ -74,6 +76,11 @@ namespace AppGuichet
         }
 
         private void lsvTransactions_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblNbrTransactions_Click(object sender, EventArgs e)
         {
 
         }

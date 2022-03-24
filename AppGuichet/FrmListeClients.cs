@@ -29,7 +29,7 @@ namespace AppGuichet
                 ListViewItem lsvClientObj = new ListViewItem(client.NumClient);
                 lsvClientObj.SubItems.Add(client.Nom);
                 lsvClientObj.SubItems.Add(client.SorteCompte.ToString());
-                lsvClientObj.SubItems.Add(client.Solde.ToString());
+                lsvClientObj.SubItems.Add(client.Solde.ToString("C2"));
                 lsvClientObj.SubItems.Add(client.MotDePasse);
 
                 lsvClients.Items.Add(lsvClientObj);

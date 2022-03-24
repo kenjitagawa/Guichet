@@ -58,16 +58,18 @@ namespace AppGuichet
             Text += APP_INFO;
 
             // À COMPLÉTER...
+            // Initialiser vos 2 collections ainsi que le ClientCourant...
             m_colClients = new List<Client>();
             m_colTransactions = new List<Transaction>();
-            // Initialiser vos 2 collections ainsi que le ClientCourant...
+            PermettreUneConnexion(true);
+            MettreAJourSelonContexte();
+            
 
 
             // Le programme doit charger les deux collections en débutant : NE PAS MODIFIER
             ChargerCollectionClients();
             ChargerCollectionTransactions();
 
-            MettreAJourSelonContexte();
         }
 
         #region Méthodes pour Charger les 2 collections
@@ -111,6 +113,8 @@ namespace AppGuichet
                     Transaction transaction = new Transaction(ligne);
                     m_colTransactions.Add(transaction);
                 }
+
+                objFichier.Close ();
             
             }
         }
@@ -124,7 +128,7 @@ namespace AppGuichet
         /// Puisque le solde du client a pu changer après le retrait.
         /// </summary>
         /// -------------------------------------------------------------------------------------
-        private void EnregistrerCollectionClients()
+        public void EnregistrerCollectionClients()
         {
             // Enregistre collection de clients.
 
@@ -150,7 +154,7 @@ namespace AppGuichet
             Close();
         }
         //---------------------------------------------------------------------------------
-        private void FrmPrincipal_FormClosing(object sender, FormClosingEventArgs e)
+        public void FrmPrincipal_FormClosing(object sender, FormClosingEventArgs e)
         {
             // Sauvegarde des transactions et de la liste des clients. 
             if (m_objClientCourant != null)
@@ -213,21 +217,26 @@ namespace AppGuichet
         private void PermettreUneConnexion(bool pConnexionEstPermise)
         {
             // Verification de connections
-            txtNumClient.ReadOnly = !pConnexionEstPermise;
-            txtMotDePasse.Enabled = pConnexionEstPermise;
+            #region Activer buttons utilisateur
+
+            lblNumClient.Enabled = pConnexionEstPermise;
+            txtNumClient.Enabled = pConnexionEstPermise;
+
             lblMotDePasse.Enabled = pConnexionEstPermise;
+            txtMotDePasse.Enabled = pConnexionEstPermise;
 
-
+            #endregion
             btnConnexion.Text = (pConnexionEstPermise ? "Se connecter" : "Se déconnecter");
+
 
             if (pConnexionEstPermise)
             {
-                txtMotDePasse.Clear();
                 txtNumClient.Clear();
+                txtNom.Clear();
+                txtMotDePasse.Clear();
                 txtSolde.Clear();
                 txtSorteCompte.Clear();
-                txtNom.Clear();
-
+                
                 txtNumClient.Focus();
             }
 
@@ -242,19 +251,23 @@ namespace AppGuichet
         private void MettreAJourSelonContexte()
         {
             // Changer les fields
+            btnConnexion.Enabled = true;
 
-            // Check si le client est ADMIN et le client courant n'est pas NULL
+            // Check si le client est ADMIN et le client courant n'est pas NULL.
             bool permission = m_objClientCourant != null && m_objClientCourant.NumClient == NO_ADMIN;
 
             #region Activer les permissions ADMIN
-            mnuAdministrateur.Enabled = permission;
+            
             mnuAdminListeClients.Enabled = permission;
             mnuAdminListeTransactions.Enabled = permission;
+            
+            
+            mnuAdministrateur.Enabled = permission;
             #endregion
 
             // If the user isnt logged in already AND if the current user is not NULL
-            grpInfosClient.Enabled = m_objClientCourant == null;//&& !permission;
-            grpIdentification.Enabled = m_objClientCourant == null; //&& !permission;
+            grpInfosClient.Enabled = m_objClientCourant != null && !permission;
+            //btnRetirer.Enabled = m_objClientCourant != null && !permission && cboMontant.SelectedIndex != -1;
 
         }
 
@@ -266,7 +279,7 @@ namespace AppGuichet
         /// <param name="pNumClient">numéro du client à rechercher</param>
         /// <returns>le client ou null si pas trouvé</returns>
         /// --------------------------------------------------------------------------------
-        private Client RechercherClient(string pNumClient)
+        public Client RechercherClient(string pNumClient)
         {
             Client clientInfo = null;
             foreach (Client client in m_colClients)
@@ -280,7 +293,7 @@ namespace AppGuichet
 
         #region Bouton Connexion/Déconnexion 
         //---------------------------------------------------------------------------------
-        private void btnConnexion_Click(object sender, EventArgs e)
+        public void btnConnexion_Click(object sender, EventArgs e)
         {
             // Connecter utilisateur
 
@@ -289,47 +302,106 @@ namespace AppGuichet
             errIdentification.SetError(txtNumClient, "");
 
             // Vérifier si les champs du Form ne sont pas vides.
-            if (m_objClientCourant == null)
+
+            if (m_objClientCourant != null)
             {
+                // Déconnexion
+                PermettreUneConnexion(true);
+                EnregistrerLaTransaction(SorteTransactions.Déconnexion, 0);
+                m_objClientCourant = null;
+
+            }
+            else
+            {
+                // Connexion
+                
+                // Rechercher le client dans la base de données
                 m_objClientCourant = RechercherClient(txtNumClient.Text);
-                if (m_objClientCourant == null)
+
+                // Checker si l'utilisateur à été trouvé
+                if (m_objClientCourant != null)
                 {
-                    errIdentification.SetError(txtNumClient, ERR_NUMERO_CLIENT);
-                    txtNumClient.Clear();
-                    txtNumClient.Focus();
-                }
-                else
-                {
-                    if (m_objClientCourant.MotDePasse == txtMotDePasse.Text)
+
+                    // Checker si son mot de passe est correct
+                    if (txtMotDePasse.Text == m_objClientCourant.MotDePasse)
                     {
-                        errIdentification.SetError(txtMotDePasse, "");
+                        errIdentification.SetError(txtMotDePasse, ""); // No error
                         PermettreUneConnexion(false);
 
                         txtNom.Text = m_objClientCourant.Nom;
+                        txtSolde.Text = m_objClientCourant.Solde.ToString("C0");
                         txtSorteCompte.Text = m_objClientCourant.SorteCompte.ToString();
-                        txtSolde.Text = m_objClientCourant.Solde.ToString();
 
                         cboMontant.SelectedIndex = -1;
+                        //btnRetirer.Enabled = true;
+
                         EnregistrerLaTransaction(SorteTransactions.Connexion, 0);
                     }
                     else
                     {
-                        errIdentification.SetError(txtMotDePasse, ERR_MOT_DE_PASSE);
-
+                        m_objClientCourant = null;
                         txtMotDePasse.Clear();
                         txtMotDePasse.Focus();
-
-                        m_objClientCourant = null;
+                        errIdentification.SetError(txtMotDePasse, ERR_MOT_DE_PASSE);
                     }
+
                 }
+                // Quoi faire si l'utilisateur n'est pas trouvé
+                else 
+                {
+                    errIdentification.SetError(txtNumClient, ERR_NUMERO_CLIENT);
+                    txtNumClient.Clear();
+                    txtNumClient.Focus();
+                } 
+                    
+
 
             }
-            else 
-            {
-                m_objClientCourant = null;
-                PermettreUneConnexion(true);
-                EnregistrerLaTransaction(SorteTransactions.Déconnexion, 0);
-            }
+
+            //if (m_objClientCourant == null)
+            //{
+            //    if (m_objClientCourant == null)
+            //    {
+            //        errIdentification.SetError(txtNumClient, ERR_NUMERO_CLIENT);
+            //        txtNumClient.Clear();
+            //        txtNumClient.Focus();
+            //    }
+            //    else
+            //    {
+
+            //        // Connected user!
+            //        if (m_objClientCourant.MotDePasse == txtMotDePasse.Text)
+            //        {
+            //            errIdentification.SetError(txtMotDePasse, "");
+            //            PermettreUneConnexion(false);
+
+            //            txtNom.Text = m_objClientCourant.Nom;
+            //            txtSorteCompte.Text = m_objClientCourant.SorteCompte.ToString();
+            //            txtSolde.Text = m_objClientCourant.Solde.ToString("C0");
+            //            btnRetirer.Enabled = true;
+
+            //            cboMontant.SelectedIndex = -1;
+            //            EnregistrerLaTransaction(SorteTransactions.Connexion, 0);
+            //        }
+            //        // Disconnected user (WRONG PASSWORD)
+            //        else
+            //        {
+            //            errIdentification.SetError(txtMotDePasse, ERR_MOT_DE_PASSE);
+
+            //            txtMotDePasse.Clear();
+            //            txtMotDePasse.Focus();
+
+            //            m_objClientCourant = null;
+            //        }
+            //    }
+
+            //}
+            //else 
+            //{
+            //    EnregistrerLaTransaction(SorteTransactions.Déconnexion, 0);
+            //    m_objClientCourant = null;
+            //    PermettreUneConnexion(true);
+            //}
             MettreAJourSelonContexte();
         }
             
@@ -338,17 +410,15 @@ namespace AppGuichet
         #region Bouton Retirer et Événement Combo Montant à retirer
         //---------------------------------------------------------------------------------
         //Retire le montant choisi
-        private void btnRetirer_Click(object sender, EventArgs e)
+        public void btnRetirer_Click(object sender, EventArgs e)
         {
             // À COMPLÉTER...
             int montant = int.Parse(cboMontant.Text);
-            if (montant == 0)
-                return;
 
-            if (m_objClientCourant.PeutRetirer(montant))
-                m_objClientCourant.Retirer(montant);
+            
+            m_objClientCourant.Retirer(montant);
 
-            txtSolde.Text = m_objClientCourant.Solde.ToString();
+            txtSolde.Text = m_objClientCourant.Solde.ToString("C2");
             cboMontant.SelectedIndex = -1;
 
             EnregistrerLaTransaction(SorteTransactions.Retrait, montant);
@@ -361,11 +431,9 @@ namespace AppGuichet
         {
             // À COMPLÉTER...
             if (cboMontant.SelectedIndex != -1)
-            {
                 btnRetirer.Enabled = m_objClientCourant.PeutRetirer(int.Parse(cboMontant.Text));
-            }
-
-            btnRetirer.Enabled = false;
+            else
+                btnRetirer.Enabled = false;
 
         }
 

@@ -1,14 +1,14 @@
 ﻿//Décommenter les lignes suivantes pour activer les tests
 //Partie à faire au premier labo
-//#define TestClasseClient
+#define TestClasseClient
 #define TestClasseTransaction
 
 //Partie à faire au deuxième labo
-//#define TestFormulairePrincipalDebut
-//#define TestLesFormulairesListe
+#define TestFormulairePrincipalDebut
+#define TestLesFormulairesListe
 
 //Partie finale
-//#define TestFormulairePrincipaleSuite
+#define TestFormulairePrincipaleSuite
 
 //=======================================================================================
 using AppGuichet;

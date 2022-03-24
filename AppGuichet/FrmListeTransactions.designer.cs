@@ -113,6 +113,7 @@
             this.lblNbrTransactions.Size = new System.Drawing.Size(38, 21);
             this.lblNbrTransactions.TabIndex = 4;
             this.lblNbrTransactions.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblNbrTransactions.Click += new System.EventHandler(this.lblNbrTransactions_Click);
             // 
             // label1
             // 
