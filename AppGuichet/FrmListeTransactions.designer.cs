@@ -59,6 +59,7 @@
             this.lsvTransactions.TabIndex = 1;
             this.lsvTransactions.UseCompatibleStateImageBehavior = false;
             this.lsvTransactions.View = System.Windows.Forms.View.Details;
+            this.lsvTransactions.SelectedIndexChanged += new System.EventHandler(this.lsvTransactions_SelectedIndexChanged);
             // 
             // clhOperation
             // 

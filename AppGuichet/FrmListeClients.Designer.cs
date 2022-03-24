@@ -50,13 +50,14 @@
             this.lsvClients.FullRowSelect = true;
             this.lsvClients.GridLines = true;
             this.lsvClients.HideSelection = false;
-            this.lsvClients.Location = new System.Drawing.Point(8, 11);
+            this.lsvClients.Location = new System.Drawing.Point(12, 12);
             this.lsvClients.MultiSelect = false;
             this.lsvClients.Name = "lsvClients";
             this.lsvClients.Size = new System.Drawing.Size(431, 310);
             this.lsvClients.TabIndex = 2;
             this.lsvClients.UseCompatibleStateImageBehavior = false;
             this.lsvClients.View = System.Windows.Forms.View.Details;
+            this.lsvClients.SelectedIndexChanged += new System.EventHandler(this.lsvClients_SelectedIndexChanged);
             // 
             // clhNo
             // 

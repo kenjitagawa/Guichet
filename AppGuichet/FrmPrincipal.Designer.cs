@@ -65,7 +65,6 @@
             this.grpIdentification.Controls.Add(this.lblMotDePasse);
             this.grpIdentification.Controls.Add(this.txtNumClient);
             this.grpIdentification.Controls.Add(this.lblNumClient);
-            this.grpIdentification.Enabled = false;
             this.grpIdentification.Location = new System.Drawing.Point(12, 34);
             this.grpIdentification.Name = "grpIdentification";
             this.grpIdentification.Size = new System.Drawing.Size(345, 137);
@@ -112,6 +111,7 @@
             this.txtNumClient.Name = "txtNumClient";
             this.txtNumClient.Size = new System.Drawing.Size(219, 22);
             this.txtNumClient.TabIndex = 1;
+            this.txtNumClient.TextChanged += new System.EventHandler(this.txtNumClient_TextChanged);
             // 
             // lblNumClient
             // 
@@ -278,7 +278,7 @@
             // 
             this.mnuAdminListeClients.Name = "mnuAdminListeClients";
             this.mnuAdminListeClients.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.C)));
-            this.mnuAdminListeClients.Size = new System.Drawing.Size(232, 22);
+            this.mnuAdminListeClients.Size = new System.Drawing.Size(231, 22);
             this.mnuAdminListeClients.Text = "Liste des clients...";
             this.mnuAdminListeClients.Click += new System.EventHandler(this.mnuAdminListeClients_Click);
             // 
@@ -286,7 +286,7 @@
             // 
             this.mnuAdminListeTransactions.Name = "mnuAdminListeTransactions";
             this.mnuAdminListeTransactions.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.T)));
-            this.mnuAdminListeTransactions.Size = new System.Drawing.Size(232, 22);
+            this.mnuAdminListeTransactions.Size = new System.Drawing.Size(231, 22);
             this.mnuAdminListeTransactions.Text = "Liste des transactions...";
             this.mnuAdminListeTransactions.Click += new System.EventHandler(this.mnuAdminListeTransactions_Click);
             // 
